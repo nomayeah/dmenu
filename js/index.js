@@ -1,5 +1,3 @@
-"use strict";
-var $ = require('jQuery');
 $(function(){
     // ローカルストレージへの書き込み関数
     function setLocalStorage(key,value){
@@ -22,7 +20,9 @@ $(function(){
 
     // 結果ボタンクリック時の処理
     $("#formId").keyup(function(){
-        setLocalStorage("hira_sei",$(".hira_sei").val());
+        var name = $(".hira_sei").val();
+        setLocalStorage("hira_sei",name);
+        $('.postName').val(name);
         setLocalStorage("hira_mei",$(".hira_mei").val());
         setLocalStorage("kan_sei",$(".kan_sei").val());
         setLocalStorage("kan_mei",$(".kan_mei").val());

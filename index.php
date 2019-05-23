@@ -32,6 +32,7 @@ include('header.php');
 						<select class="month" name="month" value=""><?php optionLoop('1','12','1');?></select>月
 						<select type="text" class="day" name="day" value=""><?php optionLoop('1','31','1');?></select>日
 					</section>
+					<input type="hidden" class="postName" name="name" value="">
 					<input type="submit" class="btn result-btn" name="btn_confirm">
 				</form>
 				<p class="status"></p>
