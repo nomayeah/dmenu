@@ -1,0 +1,19 @@
+
+mampを起動しなくても下記コマンドで立ち上げOK
+
+>cd /Applications/MAMP/htdocs/dmenu
+
+>gulp server
+
+これだけ。
+
+
+>gulp
+
+これ実行するとwatchができる
+
+index.php
+style.css
+index.js
+
+→これを使用できるように設定済
