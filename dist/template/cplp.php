@@ -1,6 +1,6 @@
 <?php
-include('functions.php');
-include('header.php');
+include('../functions.php');
+include('./header.php');
 ?>
 
 <h1>document.cookie使ってみる</h1>

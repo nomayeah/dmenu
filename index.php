@@ -1,16 +1,16 @@
 <?php
-include('functions.php');
-include('header.php');
+include('./dist/functions.php');
+include('./dist/template/header.php');
 ?>
 
 <h1>ローカルストレージの使い方を確認</h1>
-<a href="cplp.php">LPページ</a>
+<a href="./dist/template/cplp.php">LPページ</a>
 
 <div class="input_form">
 	<p class="title">ローカルストレージ sample</p>
 	<div class="row">
 		<div class="col">
-			<form method="post" action="result.php" name="inputForm" id="formId">
+			<form method="post" action="./dist/template/result.php" name="inputForm" id="formId">
 				<section>
 					<label>性(ひらがな)</label>
 					<input type="text" class="hira_sei" name="hira_sei" value="">
@@ -42,5 +42,5 @@ include('header.php');
 </div>
 
 <?php
-include('footer.php');
+include('./dist/template/footer.php');
 ?>
