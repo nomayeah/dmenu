@@ -1,65 +1,114 @@
-const gulp = require("gulp");
-const sass = require("gulp-sass");
-const autoprefixer = require("gulp-autoprefixer");
-const frontnote = require("gulp-frontnote");
-const uglity = require("gulp-uglify");
-const browser = require("browser-sync");
-const plumber = require("gulp-plumber");
-const connect = require('gulp-connect-php');
+const gulp = require("gulp"),
+      browserSync = require("browser-sync"),
+      ssi = require("connect-ssi"),
+      sass = require("gulp-sass"),
+      autoprefixer = require("gulp-autoprefixer"),
+      glob = require("gulp-sass-glob"),
+      notify = require('gulp-notify'),
+      plumber = require("gulp-plumber"),
+      babel = require('gulp-babel'),
+      uglify = require("gulp-uglify-es").default,
+      imagemin = require("gulp-imagemin"),
+      mozjpeg = require("imagemin-mozjpeg"),
+      pngquant = require("imagemin-pngquant"),
+      changed = require('gulp-changed');
 
-gulp.task("sass", done=> {
-    gulp.src("sass/**/*.scss")
-    .pipe(plumber())
-    .pipe(frontnote())
-    .pipe(sass({outputStyle:'expanded'}))
+const paths = {
+  root: "dist/",
+  scssPath: "src/scss/**/*.scss",
+  jsPath: "src/js/**/*.js",
+  imgPath: "src/img/**/*",
+  outputCss: "dist/assets/css",
+  outputJs: "dist/assets/js",
+  outputImg: "dist/assets/",
+};
 
-    .pipe(autoprefixer())
-    .on('error',sass.logError)
-    .pipe(gulp.dest("./css"))
-    .pipe(browser.reload({stream:true}));
-    // gulp4.0以降の場合は完了通知を追加する必要がある
-    done()
-});
+// browser sync
+function funcBrowserSync(done){
+  browserSync.init({
+      server: {
+          baseDir: paths.root,
+          middleware: [
+            ssi({
+              baseDir: paths.root,
+              notify: false, //通知
+              ext: ".html"
+            })
+          ]
+      },
+      port: 4000,
+      reloadOnRestart: true
+  });
+  done();
+}
 
-gulp.task("js",done=>{
-    gulp.src(["js/**/*.js","!js/complession/**/*.js"])
-    .pipe(plumber())
-
-
-    .pipe(frontnote({
-        css: '../css/style.css'
+// sass
+function funcScss() {
+    return gulp.src(paths.scssPath , {
+        sourcemaps: true
+    })
+    .pipe(plumber({
+        errorHandler: notify.onError('<%= error.message %>'),
     }))
+    .pipe(glob())
+    .pipe(sass({
+        outputStyle: 'compressed'
+    }))
+    .pipe(gulp.dest(paths.outputCss), {
+        sourcemaps: './sourcemaps'
+    })
+    .pipe(autoprefixer({
+      browsers: ["last 2 versions", "ie >= 11", "Android >= 4"],
+      cascade: false
+    }))
+    .pipe(gulp.dest(paths.outputCss), {
+        sourcemaps: './sourcemaps'
+    })
+    .pipe(browserSync.stream());
+}
 
+// js
+function funcJs() {
+  return gulp.src(paths.jsPath , {
+    sourcemaps: true
+  })
+  .pipe(plumber({
+    errorHandler: notify.onError('<%= error.message %>'),
+  }))
+  .pipe(babel())
+  .pipe(uglify({}))
+  .pipe(gulp.dest(paths.outputJs));
+}
 
-    .pipe(sass())
-    .pipe(autoprefixer())
-    .pipe(uglity())
-    .pipe(gulp.dest("./js/complession"))
-    .pipe(browser.reload({stream:true}));
-    done()
+// img
+function funcImg() {
+  return gulp.src(paths.imgPath)
+  .pipe(changed(paths.outputImg))
+  .pipe(gulp.dest(paths.outputImg))
+  .pipe(imagemin(
+    [
+      mozjpeg({
+        quality: 80 //画像圧縮率
+      }),
+      pngquant()
+    ],
+    {
+      verbose: true
+    }
+  ))
+}
 
-});
+// watch
+function funcWatch(done) {
+  gulp.watch(paths.scssPath, gulp.parallel(funcScss));
+  gulp.watch(paths.jsPath, gulp.parallel(funcJs));
+  gulp.watch(paths.imgPath, gulp.parallel(funcImg));
+  done();
+}
 
-gulp.task('default',done=>{
-    gulp.watch('sass/**/*.scss',gulp.task('sass')); // Sassの自動コンパイル
-    gulp.watch(["js/**/*.js","!js/complession/**/*.js"],gulp.task('js'));
-    gulp.series("sass", "js");
-    gulp.watch('./**',gulp.task('reload'));
-    done()
-});
-
-gulp.task("server",done=>{
-    connect.server({
-        port: 8889,
-        base: './'
-    },done=>{
-    browser({
-        proxy: 'localhost:8889'
-　　});
-　});
-done()
-});
-
-gulp.task('reload', function () {
-browser.reload();
-});
+  // scripts tasks
+gulp.task('default',
+  gulp.parallel(
+    funcBrowserSync, funcWatch, funcScss, funcJs,funcImg
+  )
+);
