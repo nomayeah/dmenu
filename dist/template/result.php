@@ -1,6 +1,6 @@
 <?php
-include('functions.php');
-include('header.php');
+include('../functions.php');
+include('./header.php');
 ?>
 
     <h1>Gulpでローカルストレージの使い方を確認</h1>
@@ -13,5 +13,5 @@ include('header.php');
 	</div>
 
 <?php
-include('footer.php');
+include('./footer.php');
 ?>

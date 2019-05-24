@@ -1,17 +1,17 @@
-const gulp = require("gulp"),
-      browserSync = require("browser-sync"),
-      ssi = require("connect-ssi"),
-      sass = require("gulp-sass"),
-      autoprefixer = require("gulp-autoprefixer"),
-      glob = require("gulp-sass-glob"),
-      notify = require('gulp-notify'),
-      plumber = require("gulp-plumber"),
-      babel = require('gulp-babel'),
-      uglify = require("gulp-uglify-es").default,
-      imagemin = require("gulp-imagemin"),
-      mozjpeg = require("imagemin-mozjpeg"),
-      pngquant = require("imagemin-pngquant"),
-      changed = require('gulp-changed');
+const gulp          = require("gulp"),
+      browserSync   = require("browser-sync"),
+      sass          = require("gulp-sass"),
+      autoprefixer  = require("gulp-autoprefixer"),
+      glob          = require("gulp-sass-glob"),
+      notify        = require('gulp-notify'),
+      plumber       = require("gulp-plumber"),
+      babel         = require('gulp-babel'),
+      uglify        = require("gulp-uglify-es").default,
+      imagemin      = require("gulp-imagemin"),
+      mozjpeg       = require("imagemin-mozjpeg"),
+      pngquant      = require("imagemin-pngquant"),
+      changed       = require('gulp-changed'),
+      connect       = require('gulp-connect-php');
 
 const paths = {
   root: "dist/",
@@ -22,25 +22,6 @@ const paths = {
   outputJs: "dist/assets/js",
   outputImg: "dist/assets/",
 };
-
-// browser sync
-function funcBrowserSync(done){
-  browserSync.init({
-      server: {
-          baseDir: paths.root,
-          middleware: [
-            ssi({
-              baseDir: paths.root,
-              notify: false, //通知
-              ext: ".html"
-            })
-          ]
-      },
-      port: 4000,
-      reloadOnRestart: true
-  });
-  done();
-}
 
 // sass
 function funcScss() {
@@ -106,9 +87,20 @@ function funcWatch(done) {
   done();
 }
 
-  // scripts tasks
+// scripts tasks
 gulp.task('default',
   gulp.parallel(
-    funcBrowserSync, funcWatch, funcScss, funcJs,funcImg
+    funcWatch, funcScss, funcJs,funcImg
   )
 );
+
+gulp.task("server", function() {
+  connect.server({
+      port: 8889,
+      base: './'
+  }, function (){
+    browserSync({
+      proxy: 'localhost:8889'
+　　});
+　});
+});
