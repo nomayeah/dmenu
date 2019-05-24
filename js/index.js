@@ -1,3 +1,5 @@
+
+
 $(function(){
     // ローカルストレージへの書き込み関数
     function setLocalStorage(key,value){
@@ -31,3 +33,17 @@ $(function(){
         setLocalStorage("day",$(".day").val());
     });
 });
+
+function cookieCheck() {
+// cookie取得
+var getCookie = 'test';
+document.cookie = 'setCookie=' + encodeURIComponent(getCookie);"path=/; domain:.cocoloni.jp;";
+
+
+var setCookie = document.cookie.split(';');
+var content = null;
+setCookie.forEach(function(value) {
+    content = value.split(';');
+});
+document.write(content);
+}
